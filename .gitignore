@@ -55,3 +55,5 @@ nunit-*.xml
 
 #node
 */node_modules/
+
+.vscode/
