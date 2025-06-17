@@ -1,38 +1,20 @@
-using API.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using API.Interface;
-using API.Service;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using API.Extension;
+// using API.Data;
+// using Microsoft.AspNetCore.Authentication.JwtBearer;
+// using Microsoft.EntityFrameworkCore;
+// using API.Interface;
+// using API.Service;
+// using Microsoft.IdentityModel.Tokens;
+// using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationServices(builder.Configuration);
+//Equivalent to -> ApplicationServiceExtensions.AddApplicationServices(builder.Services,builder.Configuration);
 
-builder.Services.AddCors();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("TokenKey not found");
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
-
+builder.Services.AddIdentityService(builder.Configuration);
 
 var app = builder.Build();
 
